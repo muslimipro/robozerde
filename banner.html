@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Баннер AI Hardware Hackathon</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=JetBrains+Mono:wght@700&display=swap">
+<style>html,body{margin:0;background:transparent}</style>
+</head>
+<body>
+
+<!--
+  Баннер-анонс AI Hardware Hackathon для основного сайта Artisan: полоса на всю ширину.
+  Вставка: скопировать всё от «BANNER START» до «BANNER END» (стили изолированы префиксом rzb-).
+  Или iframe: <iframe src="https://robozerde.artisan.education/banner.html" title="AI Hardware Hackathon" style="display:block;width:100%;height:64px;border:0" loading="lazy"></iframe>
+  (на узких экранах полоса в две строки — высота iframe ~92px).
+  Тексты и даты — по CLAUDE.md; при изменении правил править и здесь.
+-->
+
+<!-- BANNER START -->
+<style>
+.rzb{container-type:inline-size;width:100%;font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
+.rzb *{box-sizing:border-box}
+.rzb-bar{position:relative;display:flex;align-items:center;justify-content:center;gap:10px 18px;min-height:64px;padding:10px 20px;
+  overflow:hidden;text-decoration:none;color:#F4F7FA;background:#1B1D21;border-bottom:2px solid #28CA9E}
+.rzb-bar::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(151,126,251,.18),transparent 35%,transparent 65%,rgba(40,202,158,.18));pointer-events:none}
+.rzb-bar:focus-visible{outline:3px solid #FFAB00;outline-offset:-3px}
+.rzb-tag{position:relative;flex:none;display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:999px;background:#322564;color:#DCD3FF;
+  font:700 11px/1 'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}
+.rzb-tag i{width:7px;height:7px;border-radius:50%;background:#28CA9E;box-shadow:0 0 0 3px rgba(40,202,158,.25)}
+.rzb-text{position:relative;min-width:0;font-size:15px;line-height:1.35;color:#DEE4EB}
+.rzb-text b{font-weight:900;color:#F4F7FA;letter-spacing:-.01em}
+.rzb-text .rzb-short{display:none}
+.rzb-text .o{color:#977EFB}.rzb-text .a{color:#28CA9E}
+.rzb-cta{position:relative;flex:none;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;
+  background:#28CA9E;color:#1B1D21;font-weight:800;font-size:14px;white-space:nowrap;transition:filter .2s}
+.rzb-bar:hover .rzb-cta{filter:brightness(1.1)}
+.rzb-cta svg{transition:transform .2s}
+.rzb-bar:hover .rzb-cta svg{transform:translateX(3px)}
+@container (max-width:760px){
+  .rzb-bar{justify-content:space-between;padding:10px 16px}
+  .rzb-tag{display:none}
+  .rzb-text{font-size:13.5px}
+  .rzb-text .rzb-long{display:none}
+  .rzb-text .rzb-short{display:inline}
+  .rzb-cta{width:40px;height:40px;padding:0;justify-content:center}
+  .rzb-cta span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+}
+@media (prefers-reduced-motion:reduce){.rzb-cta,.rzb-cta svg{transition:none}}
+</style>
+<div class="rzb">
+  <a class="rzb-bar" href="https://robozerde.artisan.education" target="_top">
+    <span class="rzb-tag"><i></i>Робо Зерде 2026</span>
+    <span class="rzb-text"><b><span class="o">AI</span> <span class="a">Hard</span>ware Hackathon</b><span class="rzb-long"> — олимпиада для команд 7–9 классов. Онлайн‑отбор до 20 ноября, финал 5–6 декабря</span><span class="rzb-short"><br>Отбор до 20 ноября · финал 5–6 дек.</span></span>
+    <span class="rzb-cta"><span>Подробнее</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </span>
+  </a>
+</div>
+<!-- BANNER END -->
+
+</body>
+</html>
