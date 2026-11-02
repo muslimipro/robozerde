@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Робо Зерде · AI Hardware Hackathon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="icon" href="favicon.ico">
+<style>
+:root{
+  color-scheme: dark;
+  /* Палитра artisan-platform: src/v2/app/styles/colors.css */
+  --bg:#1B1D21; --surface:#23262B; --surface-2:#1F2125; --line:#353B41; --line-2:#505862;
+  --text:#F4F7FA; --soft:#DEE4EB; --muted:#A8B5C2; --dim:#8593A3;
+  --primary:#28CA9E; --primary-700:#18795F; --purple:#977EFB; --purple-800:#322564;
+  --warning:#FFAB00; --blue:#5EACFF; --rose:#FF6B8D;
+  --ink:#1B1D21; --deep:#151719;
+  --display:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --body:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.5;
+  background-image:radial-gradient(#2A2E34 1.4px,transparent 1.4px);background-size:26px 26px;padding-inline:20px}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.05}
+p{margin:0}
+a{color:var(--primary)}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--warning);outline-offset:3px;border-radius:6px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:22px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:var(--text);text-decoration:none}
+.brand img{width:32px;height:32px}
+.top .mono{font-size:13px;color:var(--muted)}
+
+/* hero */
+.hero{padding-block:28px 40px;display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:end}
+.sticker{display:inline-block;transform:rotate(-3deg);background:var(--warning);color:var(--ink);font-family:var(--display);font-weight:800;font-size:15px;padding:9px 16px;border-radius:7px;margin-bottom:22px}
+.hero h1{font-weight:900;font-size:clamp(36px,7.6vw,84px);white-space:nowrap;letter-spacing:-.03em;line-height:.93}
+.hero h1 .o{color:var(--purple)}
+.hero h1 .a{color:var(--primary)}
+.lede{font-size:clamp(18px,2.2vw,22px);font-weight:600;margin-top:22px;max-width:34ch}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:12px 22px;border-radius:999px;font-weight:800;font-size:16px;text-decoration:none;border:2px solid transparent}
+.btn-primary{background:var(--primary);color:var(--ink)}
+.btn-ghost{border-color:var(--line-2);color:var(--text)}
+.btn:hover{filter:brightness(1.08)}
+.cta-note{font-size:14px;color:var(--muted);margin-top:12px}
+
+.count{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:22px}
+.count .eyebrow{margin-bottom:12px}
+.count-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cell{background:var(--surface-2);border-radius:14px;padding:14px 6px;text-align:center}
+.cell b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,38px);font-variant-numeric:tabular-nums;line-height:1}
+.cell span{font-size:12px;color:var(--muted)}
+.now-line{margin-top:14px;font-size:15px;color:var(--muted)}
+.now-line strong{color:var(--text)}
+
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding-bottom:56px}
+.fact{border:2px solid var(--line);border-radius:18px;padding:16px 18px;background:var(--surface)}
+.fact b{display:block;font-family:var(--display);font-weight:800;font-size:19px;margin-top:4px;line-height:1.2}
+
+/* progress strip */
+.strip{margin-bottom:36px}
+.strip-bar{position:relative;height:14px;border-radius:999px;background:var(--surface);border:2px solid var(--line);overflow:hidden}
+.strip-fill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--purple),var(--primary));border-radius:999px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.strip-labels{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--muted);gap:8px}
+
+/* section head */
+.sec{padding-block:24px 64px}
+.sec-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.sec-head h2{font-size:clamp(32px,5vw,48px);font-weight:800}
+.sec-sub{color:var(--muted);max-width:60ch;margin-bottom:28px}
+
+/* timeline */
+.tl{list-style:none;margin:0;padding:0}
+.stage{display:grid;grid-template-columns:64px 1fr;gap:20px;position:relative}
+.rail{display:flex;flex-direction:column;align-items:center}
+.node{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:3px solid var(--line-2);color:var(--dim);transition:all .5s ease;flex-shrink:0}
+.node svg{width:24px;height:24px}
+.seg{flex:1;width:4px;margin:6px 0;border-radius:2px;background:repeating-linear-gradient(var(--line-2) 0 8px,transparent 8px 16px);min-height:24px}
+.stage:last-child .seg{display:none}
+.card{background:var(--surface-2);border:2px solid var(--line);border-radius:22px;padding:22px 24px;margin-bottom:18px;transition:all .5s ease;opacity:.55}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.card h3{font-size:clamp(20px,2.6vw,26px);font-weight:800;margin-top:4px}
+.date{font-family:var(--mono);font-weight:700;font-size:14px;padding:7px 13px;border-radius:999px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.status i{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+.card .body{margin-top:12px;color:var(--soft);display:grid;gap:8px}
+.card ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.card li{position:relative;padding-left:26px}
+.card li::before{content:"→";position:absolute;left:0;font-weight:800;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{font-family:var(--mono);font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line-2)}
+.meter{margin-top:14px;display:none}
+.meter-bar{height:8px;border-radius:999px;background:var(--bg);overflow:hidden}
+.meter-bar span{display:block;height:100%;width:0;background:var(--primary);border-radius:999px;transition:width 1s ease}
+.meter-txt{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px;gap:8px}
+.hint{margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+
+/* states */
+.stage.is-done .node{background:var(--purple);border-color:var(--purple);color:var(--ink)}
+.stage.is-done .seg{background:var(--purple)}
+.stage.is-done .card{opacity:1;border-color:var(--purple-800)}
+.stage.is-done .status{color:var(--purple)}
+.stage.is-active .node{background:var(--primary);border-color:var(--primary);color:var(--ink);box-shadow:0 0 0 8px rgba(40,202,158,.18),0 0 36px rgba(40,202,158,.55);animation:pulse 2.2s ease-in-out infinite}
+.stage.is-active .card{opacity:1;background:var(--surface);border-color:var(--primary);box-shadow:0 0 0 1px var(--primary),0 18px 60px -20px rgba(40,202,158,.45)}
+.stage.is-active .status{color:var(--primary)}
+.stage.is-active .meter{display:block}
+.stage.is-active .card li::before{color:var(--primary)}
+.stage.is-done .card li::before{color:var(--purple)}
+.stage.is-final.is-active .card,.stage.is-final.is-done .card{background:var(--text);color:var(--ink);border-color:var(--text)}
+.stage.is-final.is-active .card .body,.stage.is-final.is-done .card .body{color:#353B41}
+.stage.is-final.is-active .date{background:var(--ink);color:var(--text)}
+@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(40,202,158,.08),0 0 48px rgba(40,202,158,.7)}}
+.stage.lighting .node{transform:scale(1.12)}
+
+/* final */
+.final-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}
+.part{border-radius:20px;padding:22px;display:grid;gap:8px;align-content:start}
+.part b{font-family:var(--display);font-weight:900;font-size:44px;line-height:1}
+.part h3{font-size:20px;font-weight:800;font-family:var(--body)}
+.p1{background:var(--deep);border:2px solid var(--purple)}
+.p1 b{color:var(--purple)}
+.p2{background:var(--primary);color:var(--ink)}
+.p3{background:var(--warning);color:var(--ink)}
+.city{background:var(--deep);border:2px solid var(--line);border-radius:22px;padding:14px;overflow-x:auto}
+.city svg{display:block;width:100%;height:auto;min-width:520px}
+.city-note{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:10px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px 18px;font-weight:700}
+.step .mono{color:var(--primary);font-size:13px;display:block;margin-bottom:4px}
+
+/* rules / who */
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.box{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:22px}
+.box h3{font-size:20px;font-weight:800;margin-bottom:12px}
+.box ul{margin:0;padding-left:20px;display:grid;gap:6px;color:var(--soft)}
+
+/* nav */
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{font-size:14px;font-weight:700;color:var(--text);text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid var(--line)}
+.nav a:hover{border-color:var(--primary);color:var(--primary)}
+
+/* video */
+.rule-note{margin-top:14px;background:var(--surface);border:2px solid var(--rose);border-radius:18px;padding:18px 20px}
+.rule-note b{font-size:17px}
+.rule-note ul{margin:8px 0 0;padding-left:20px;display:grid;gap:6px;color:var(--soft)}
+.mail-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;word-break:break-all}
+.copy{font:700 12px var(--mono);padding:6px 10px;min-height:32px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);cursor:pointer}
+.copy:hover{border-color:var(--primary)}
+.sub-h{font-family:var(--body);font-size:22px;font-weight:800;margin:26px 0 12px}
+.vid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.spec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.spec div{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px}
+.spec b{display:block;font-family:var(--display);font-weight:800;font-size:18px;margin-top:2px}
+.script{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:20px}
+.script h3{font-size:18px;font-weight:800;margin-bottom:12px}
+.scene{display:grid;grid-template-columns:92px 1fr;gap:12px;padding-block:10px;border-top:1px solid var(--line)}
+.scene:first-of-type{border-top:0}
+.scene .mono{color:var(--primary);font-size:13px;font-weight:700;padding-top:2px}
+.scene p{color:var(--soft);font-size:16px}
+
+/* criteria */
+.crit-bar{display:flex;height:48px;border-radius:14px;overflow:hidden;font-weight:800;font-size:14px;color:var(--ink)}
+.crit-bar div{display:flex;align-items:center;justify-content:center;text-align:center;padding:0 6px}
+.crit-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px}
+.crit-list div{font-size:14px;color:var(--soft)}
+.crit-list b{display:block;font-size:15px;color:var(--text)}
+
+/* docs */
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.doc{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.doc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.fmt{font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--bg);border:1px solid var(--line-2);color:var(--muted)}
+.doc h3{font-family:var(--body);font-size:17px;font-weight:800;line-height:1.3}
+.doc p{font-size:14px;color:var(--muted)}
+.doc a,.doc .soon{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:12px;font-weight:800;font-size:15px;text-decoration:none}
+.doc a{background:var(--text);color:var(--ink)}
+.doc a:hover{background:var(--primary)}
+.doc .soon{border:1px dashed var(--line-2);color:var(--dim)}
+
+/* faq */
+.faq{display:grid;gap:10px}
+.faq details{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:0 18px}
+.faq summary{cursor:pointer;font-weight:800;padding-block:16px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";font-family:var(--mono);color:var(--primary);font-size:20px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq details p{padding-bottom:16px;color:var(--soft);max-width:70ch}
+
+@media (max-width:820px){
+  .vid,.docs{grid-template-columns:1fr}
+  .crit-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:480px){ .crit-bar{font-size:11px} .spec{grid-template-columns:1fr} }
+
+/* secret */
+.secret{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:center;background:var(--deep);border:2px dashed var(--line-2);border-radius:24px;padding:28px;position:relative;overflow:hidden}
+.lock{width:120px;height:120px;border-radius:28px;background:var(--surface);border:2px solid var(--line-2);display:grid;place-items:center;color:var(--primary)}
+.lock svg{width:56px;height:56px}
+.secret h3{font-size:clamp(22px,3vw,30px);font-weight:800;margin:10px 0 10px}
+.secret p{color:var(--soft);max-width:62ch}
+.stamp{display:inline-block;transform:rotate(-4deg);border:3px solid var(--primary);color:var(--primary);font-family:var(--display);font-weight:900;font-size:14px;padding:3px 10px;border-radius:6px}
+
+/* roadmap */
+.rm-scroll{overflow-x:auto;background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:8px 20px}
+.rm{position:relative;height:190px;min-width:760px}
+.rm-axis{position:absolute;left:0;right:0;top:162px;height:2px;background:var(--line-2)}
+.rm-tick{position:absolute;top:72px;bottom:18px;border-left:1px dashed var(--line-2)}
+.rm-tick span{position:absolute;bottom:-18px;left:4px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.rm-track{position:absolute;left:0;right:0;top:72px;height:46px}
+.rm-seg{position:absolute;top:0;height:46px;border-radius:10px;display:flex;flex-direction:column;justify-content:center;padding:0 10px;overflow:hidden;white-space:nowrap;box-shadow:inset 0 0 0 2px rgba(15,16,22,.25)}
+.rm-seg b{font-size:13px;line-height:1.1}
+.rm-seg span{font-family:var(--mono);font-size:11px;opacity:.85}
+.rm-seg.past{opacity:.4}
+.rm-sub{position:absolute;top:62px;height:6px;border-radius:3px}
+.rm-sub.past{opacity:.4}
+.rm-seg.now{box-shadow:0 0 0 3px var(--bg),0 0 0 5px currentColor,0 0 24px rgba(40,202,158,.5)}
+.rm-label{position:absolute;display:flex;flex-direction:column;padding-left:10px;border-left:3px solid var(--c);white-space:nowrap}
+.rm-label.end{padding-left:0;padding-right:10px;border-left:0;border-right:3px solid var(--c);text-align:right}
+.rm-label.up{top:20px;height:42px;justify-content:flex-start}
+.rm-label.down{top:122px;height:36px;justify-content:flex-end}
+.rm-label b{font-size:13px}
+.rm-label span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.rm-today{position:absolute;top:60px;bottom:26px;width:0;border-left:2px solid var(--text)}
+.rm-today span{position:absolute;bottom:-4px;left:-30px;width:60px;text-align:center;font-family:var(--mono);font-size:10px;font-weight:700;background:var(--text);color:var(--ink);border-radius:999px;padding:1px 0;transform:translateY(100%)}
+.rm-hint{display:none;font-size:12px;color:var(--dim);margin-top:8px}
+@media (max-width:820px){ .rm-hint{display:block} }
+
+/* final tasks */
+.tasks{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px}
+.task{border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.task-top{display:flex;justify-content:space-between;align-items:center}
+.task-n{font-family:var(--display);font-weight:900;font-size:40px;line-height:1}
+.pts{font-family:var(--mono);font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px}
+.task h3{font-family:var(--body);font-size:22px;font-weight:800}
+.task ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:15px}
+.t1{background:var(--warning);color:var(--ink)}
+.task-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+.task-cols b{display:block;font-size:17px;margin-bottom:6px}
+@media (max-width:560px){.task-cols{grid-template-columns:1fr}}
+.t1 .pts,.t2 .pts{background:var(--ink);color:var(--text)}
+.t2{background:var(--primary);color:var(--ink)}
+.t3{background:var(--deep);border:2px solid var(--purple)}
+.t3 .task-n{color:var(--purple)}
+.t3 .pts{background:var(--purple);color:var(--ink)}
+.t3 p,.t3 ul{color:var(--soft)}
+@media (max-width:820px){ .tasks{grid-template-columns:1fr} }
+
+.total{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:22px;margin-bottom:16px;display:grid;gap:14px}
+.total-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.total-head h3{font-family:var(--body);font-size:22px;font-weight:800}
+.total-head .mono{font-size:13px;color:var(--muted)}
+.total-bar{display:grid;grid-template-columns:1fr 1fr;height:52px;border-radius:14px;overflow:hidden;font-weight:800;color:var(--ink)}
+.total-bar div{display:flex;align-items:center;justify-content:center;text-align:center;padding:0 8px}
+.total p{color:var(--soft);max-width:70ch}
+
+/* footer */
+.foot{border-top:2px solid var(--line);padding-block:32px 48px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.foot b{font-family:var(--display);font-size:20px}
+.foot-brand{display:flex;gap:14px;align-items:flex-start}
+.foot-brand img{width:40px;height:40px;margin-top:2px}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:28px}
+  .hero h1{font-size:clamp(36px,11.5vw,84px)}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .final-grid,.steps,.two{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  body{padding-inline:16px}
+  .stage{grid-template-columns:44px 1fr;gap:12px}
+  .node{width:44px;height:44px}
+  .node svg{width:20px;height:20px}
+  .card{padding:18px}
+  .count-grid{gap:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="https://learn.artisan.education" target="_blank" rel="noopener"><img src="assets/logo-white.png" alt="" width="32" height="32">Artisan Education</a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#path">Этапы</a><a href="#calendar">Роадмап</a><a href="#final">Финал</a><a href="#video">Видео и презентация</a><a href="#docs">Документы</a><a href="#faq">Вопросы</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="title">
+    <div>
+      <div class="sticker">РОБО ЗЕРДЕ 2026</div>
+      <h1 id="title"><span class="o">AI</span> <span class="a">HARD</span>WARE<br>HACKATHON</h1>
+      <p class="lede">Собери своё AI‑устройство на любой электронике, пройди онлайн‑отбор и реши секретное инженерное задание в финале.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://learn.artisan.education" target="_blank" rel="noopener">Создать команду</a>
+        <a class="btn btn-ghost" href="#path">Этапы</a>
+      </div>
+      <p class="cta-note">Кнопка для наставника. Ученики присоединятся по коду класса.</p>
+    </div>
+    <div class="count" aria-live="polite">
+      <div class="eyebrow">До финала · 5 декабря, 09:00</div>
+      <div class="count-grid">
+        <div class="cell"><b id="cd-d">—</b><span>дней</span></div>
+        <div class="cell"><b id="cd-h">—</b><span>часов</span></div>
+        <div class="cell"><b id="cd-m">—</b><span>минут</span></div>
+        <div class="cell"><b id="cd-s">—</b><span>секунд</span></div>
+      </div>
+      <p class="now-line" id="nowLine">Сейчас: <strong>—</strong></p>
+    </div>
+  </section>
+
+  <div class="facts">
+    <div class="fact"><span class="eyebrow">Команда</span><b>3 ученика 7–9 классов + наставник</b></div>
+    <div class="fact"><span class="eyebrow">Этапы</span><b>онлайн → офлайн</b></div>
+    <div class="fact"><span class="eyebrow">От региона</span><b>1 команда в финал</b></div>
+    <div class="fact"><span class="eyebrow">Финал</span><b>5–6 декабря</b></div>
+  </div>
+
+  <section class="sec" id="path" aria-labelledby="pathTitle">
+    <div class="sec-head"><h2 id="pathTitle">Путь участника</h2><span class="mono" style="color:var(--muted)">этапы загораются по датам</span></div>
+    <p class="sec-sub">Фиолетовый этап пройден, зелёный идёт сейчас, серые откроются позже. Время — по Астане.</p>
+
+    <div class="strip" aria-hidden="true">
+      <div class="strip-bar"><div class="strip-fill" id="stripFill"></div></div>
+      <div class="strip-labels"><span>онлайн‑отбор</span><span>итоги</span><span>PiBody Lite</span><span>подготовка</span><span>финал</span></div>
+    </div>
+
+    <ol class="tl" id="timeline">
+      <li class="stage" data-start="2026-11-01T00:00" data-end="2026-11-20T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Регистрация</h3></div>
+            <span class="date">1–20 ноября</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>Подайте заявку в категории AI Hardware Hackathon на сайте <a href="https://yrys.group" target="_blank" rel="noopener">yrys.group</a> — это общая регистрация олимпиады</li>
+              <li>Наставник создаёт команду на нашей платформе: нажимает «Создать команду», регистрирует школу на <a href="https://learn.artisan.education" target="_blank" rel="noopener">learn.artisan.education</a> и создаёт класс. Пошаговые инструкции — в разделе <a href="#docs">«Документы»</a></li>
+              <li>Ученики сами регистрируются на <a href="https://learn.artisan.education" target="_blank" rel="noopener">learn.artisan.education</a> по коду класса от наставника и начинают обучение</li>
+            </ul>
+            <p>Регистрация открыта с 1 по 20 ноября, до 23:59. Обучение и приём видео идут в эти же дни; если команда присоединится позже, курсы можно пройти в ускоренном режиме.</p>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+
+      <li class="stage" data-start="2026-11-01T00:00" data-end="2026-11-20T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Обучение и свой проект</h3></div>
+            <span class="date">1–20 ноября</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>Все участники проходят общий курс хакатона: программирование, 3D‑моделирование, AI и «Стартап» в одном курсе</li>
+              <li>Команда придумывает AI‑устройство, которое решает реальную проблему, и собирает прототип</li>
+            </ul>
+            <div class="chips" aria-label="Можно собирать на любой электронике">
+              <span class="chip">Arduino</span><span class="chip">micro:bit</span><span class="chip">Raspberry Pi</span><span class="chip">LEGO</span><span class="chip">PiBody</span><span class="chip">любой набор</span>
+            </div>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+
+      <li class="stage" data-start="2026-11-01T00:00" data-end="2026-11-20T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Видео и презентация проекта</h3></div>
+            <span class="date">1–20 ноября</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>Загрузите видео о проекте куда удобно: YouTube, Google Drive, Instagram или другой сервис</li>
+              <li>Видео должно открываться по ссылке без запроса доступа до конца отбора — до 25 ноября включительно</li>
+              <li>Отправьте ссылку на видео и презентацию проекта (8–10 слайдов, PDF) одним письмом на info@artisan.education. В письме укажите название команды, регион, школу, ФИО участников и наставника</li>
+              <li>Требования к видео и презентации смотрите ниже, в разделе <a href="#video">«Видео и презентация»</a></li>
+            </ul>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+
+      <li class="stage" data-start="2026-11-21T00:00" data-end="2026-11-25T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Итоги отбора</h3></div>
+            <span class="date">21–25 ноября</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>50 баллов — обучение на платформе, 50 — видео и презентация проекта</li>
+              <li>От каждого региона в финал проходит одна команда</li>
+            </ul>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+
+      <li class="stage" data-start="2026-11-26T00:00" data-end="2026-11-27T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Финалисты получают PiBody Lite</h3></div>
+            <span class="date">26–27 ноября</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>Каждой команде‑финалисту отправляем набор PiBody Lite</li>
+            </ul>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+
+      <li class="stage" data-start="2026-11-26T00:00" data-end="2026-12-04T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Подготовка к финалу</h3></div>
+            <span class="date">26 ноя – 4 дек</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>Команда делает проекты на платформе с PiBody Lite: практика с датчиками и модулями набора</li>
+              <li>Подготовка стенда: прототип вашего проекта, плакат, 3D‑модель</li>
+              <li>Репетиция: рассказ о проекте у стенда и питч до 5 минут</li>
+            </ul>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+
+      <li class="stage is-final" data-start="2026-12-05T00:00" data-end="2026-12-06T23:59">
+        <div class="rail"><div class="node"></div><div class="seg"></div></div>
+        <article class="card">
+          <div class="card-top">
+            <div><span class="status"><i></i><span class="st-txt"></span></span><h3>Республиканский финал</h3></div>
+            <span class="date">5–6 декабря</span>
+          </div>
+          <div class="body">
+            <ul>
+              <li>День 1: все команды показывают проекты на стендах. Среди гостей ходят секретные жюри — слушают и оценивают</li>
+              <li>День 2: отобранные команды выступают с питчем перед жюри</li>
+              <li>Секретное инженерное задание проходят все команды: в первый день — пробный тур, во второй — основное задание</li>
+            </ul>
+          </div>
+          <div class="meter"><div class="meter-bar"><span></span></div><div class="meter-txt"><span class="m-left"></span><span class="m-end"></span></div></div>
+          <p class="hint"></p>
+        </article>
+      </li>
+    </ol>
+  </section>
+
+  <section class="sec" id="calendar" aria-labelledby="calTitle">
+    <div class="sec-head"><h2 id="calTitle">Роадмап</h2><span class="mono" style="color:var(--muted)">1 ноября – 6 декабря 2026</span></div>
+    <div class="rm-scroll"><div class="rm" id="roadmap" role="img" aria-label="Роадмап: онлайн‑отбор (регистрация, обучение, видео и презентация) 1–20 ноября, итоги 21–25 ноября, PiBody Lite 26–27 ноября, подготовка 26 ноября – 4 декабря, финал 5–6 декабря"></div></div>
+    <p class="rm-hint mono">листайте вбок →</p>
+  </section>
+
+  <section class="sec" id="final" aria-labelledby="finalTitle">
+    <div class="sec-head"><h2 id="finalTitle">Финал</h2><span class="mono" style="color:var(--muted)">5–6 декабря</span></div>
+    <p class="sec-sub">Два дня на площадке. В первый день все команды показывают проекты на стендах, а среди гостей ходят секретные жюри: они слушают, как обычные посетители, и оценивают. По их оценкам отбирают команды, которые во второй день выступят с питчем. Секретное задание проходят все команды.</p>
+
+    <div class="tasks">
+      <article class="task t1">
+        <div class="task-top"><span class="task-n">1</span><span class="pts">50 баллов</span></div>
+        <h3>Проект: стенд и питч</h3>
+        <p>Ваш проект с отбора вживую. Можно доработать прототип и презентацию до финала. Рассказывайте о проекте каждому, кто подошёл к стенду: любой гость может оказаться жюри.</p>
+        <div class="task-cols">
+          <div>
+            <b>Стенд · день 1, все команды</b>
+            <ul>
+              <li>Работающий прототип</li>
+              <li>Плакат: проблема, решение, команда</li>
+              <li>3D‑модель на экране или в распечатке</li>
+              <li>От организаторов: стол и розетка</li>
+            </ul>
+          </div>
+          <div>
+            <b>Питч · день 2, отобранные команды</b>
+            <ul>
+              <li>До 5 минут выступления</li>
+              <li>До 5 минут вопросов жюри</li>
+              <li>Отвечать может любой участник</li>
+              <li>Время выступления — по жеребьёвке</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+      <article class="task t3">
+        <div class="task-top"><span class="task-n">2</span><span class="pts">50 баллов</span></div>
+        <h3>Секретное задание</h3>
+        <p>Инженерное задание на наборах Artisan. В первый день — пробный тур на простых заданиях, во второй откроются условия основного задания.</p>
+        <ul>
+          <li>Собирать ничего не нужно — только запрограммировать</li>
+          <li>Программировать можно на Python или Blockly</li>
+          <li>Баллы за каждый выполненный пункт</li>
+          <li>Несколько попыток, в зачёт лучшая</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="total">
+      <div class="total-head"><h3>Как оценивают финал</h3><span class="mono">100 баллов · 50 на 50</span></div>
+      <div class="total-bar" role="img" aria-label="Финал: проект — стенд и питч — 50 баллов, секретное задание 50 баллов">
+        <div style="background:var(--warning)">Проект: стенд + питч · 50</div>
+        <div style="background:var(--purple)">Секретное задание · 50</div>
+      </div>
+      <p>Половину баллов финала команда получает за свой проект — стенд, питч, половину — за секретное задание. Отбор и финал оцениваются отдельно.</p>
+    </div>
+
+    <div class="secret">
+      <div class="lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.4" fill="currentColor"/></svg></div>
+      <div>
+        <div class="stamp">СЕКРЕТНО</div>
+        <h3>Что известно о секретном задании</h3>
+        <p>В первый день финала — пробный тур на простых заданиях, чтобы разобраться, как всё устроено. Условия основного задания откроются во второй день. Задание выполняется на наборах Artisan: собирать ничего не нужно, только запрограммировать — на Python или Blockly — и заставить всё работать. Лучшая подготовка — проекты на платформе и практика на PiBody Lite, который финалисты получат 26–27 ноября.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="sec" id="video" aria-labelledby="videoTitle">
+    <div class="sec-head"><h2 id="videoTitle">Видео и презентация</h2><span class="mono" style="color:var(--muted)">приём 1–20 ноября</span></div>
+    <p class="sec-sub">Это главные материалы онлайн‑отбора. Команда отправляет их одним письмом на info@artisan.education: видео — ссылкой, презентацию — файлом PDF. По ним жюри решает, кто поедет в финал от региона.</p>
+
+    <h3 class="sub-h">Видео</h3>
+    <div class="vid">
+      <div class="spec">
+        <div><span class="eyebrow">Длительность</span><b>до 3 минут</b></div>
+        <div><span class="eyebrow">Формат</span><b>любой: горизонтально или вертикально</b></div>
+        <div><span class="eyebrow">Где разместить</span><b>YouTube, Google Drive, Instagram и др.</b></div>
+        <div><span class="eyebrow">Язык</span><b>казахский или русский</b></div>
+        <div><span class="eyebrow">В кадре</span><b>все 3 участника</b></div>
+        <div><span class="eyebrow">Когда</span><b>1–20 ноября, до 23:59</b></div>
+      </div>
+      <div class="script">
+        <h3>Что показать</h3>
+        <div class="scene"><span class="mono">0:00–0:30</span><p>Команда и проблема: кто вы и что хотите решить</p></div>
+        <div class="scene"><span class="mono">0:30–1:30</span><p>Решение: прототип в работе, крупным планом</p></div>
+        <div class="scene"><span class="mono">1:30–2:30</span><p>Где в устройстве ИИ, как устроено, 3D‑модель</p></div>
+        <div class="scene"><span class="mono">2:30–3:00</span><p>Кому это поможет и что будете улучшать</p></div>
+      </div>
+    </div>
+
+    <h3 class="sub-h">Презентация</h3>
+    <div class="vid">
+      <div class="spec">
+        <div><span class="eyebrow">Объём</span><b>8–10 слайдов</b></div>
+        <div><span class="eyebrow">Формат</span><b>PDF, 16:9</b></div>
+        <div><span class="eyebrow">Размер файла</span><b>до 20 МБ</b></div>
+        <div><span class="eyebrow">Язык</span><b>казахский или русский</b></div>
+        <div><span class="eyebrow">Шаблон</span><b><a href="#docs">скачать в «Документах»</a></b></div>
+        <div><span class="eyebrow">Куда</span><b class="mail-row"><span id="mailAddr">info@artisan.education</span><button type="button" class="copy" id="copyMail" aria-label="Скопировать адрес почты">Копировать</button></b></div>
+      </div>
+      <div class="script">
+        <h3>Структура</h3>
+        <div class="scene"><span class="mono">слайд 1</span><p>Название проекта, команда, школа, регион</p></div>
+        <div class="scene"><span class="mono">2–3</span><p>Проблема и кто с ней сталкивается</p></div>
+        <div class="scene"><span class="mono">4–5</span><p>Решение: как работает устройство, схема и 3D‑модель</p></div>
+        <div class="scene"><span class="mono">6–7</span><p>Роль ИИ, фото прототипа, результаты тестов</p></div>
+        <div class="scene"><span class="mono">8–10</span><p>Пользователи и польза, планы, роли в команде</p></div>
+      </div>
+    </div>
+    <div class="rule-note">
+      <b>Условия для видео</b>
+      <ul>
+        <li>Ссылка открывается без запроса доступа — иначе жюри не увидит видео</li>
+        <li>Видео нельзя удалять и закрывать до конца отбора, до 25 ноября включительно. Если видео недоступно — команда выбывает из отбора</li>
+      </ul>
+    </div>
+    <div class="rule-note" style="border-color:var(--primary)">
+      <b>Как отправить видео и презентацию</b>
+      <ul>
+        <li>Адрес: info@artisan.education, до 23:59 20 ноября</li>
+        <li>Тема письма: «AI Hardware Hackathon — [название команды] — [регион]»</li>
+        <li>В письме: ссылка на видео, название команды, регион, школа, ФИО участников и наставника</li>
+        <li>Файл PDF до 20 МБ; если больше — ссылка на Google Drive с открытым доступом</li>
+      </ul>
+    </div>
+    <p class="city-note" style="margin-top:14px">Презентацию можно взять за основу для защиты в финале.</p>
+  </section>
+
+  <section class="sec" aria-labelledby="critTitle">
+    <div class="sec-head"><h2 id="critTitle">Как оценивают отбор</h2><span class="mono" style="color:var(--muted)">100 баллов · 50 на 50</span></div>
+    <div class="total-bar" role="img" aria-label="Отбор: обучение 50 баллов, видео и презентация 50 баллов">
+      <div style="background:var(--blue)">Обучение · 50</div>
+      <div style="background:var(--primary)">Видео и презентация · 50</div>
+    </div>
+    <div class="two" style="margin-top:14px">
+      <div class="box"><h3>Обучение — 50 баллов</h3><ul><li>Прохождение общего курса хакатона на платформе: программирование, 3D‑моделирование, AI и «Стартап»</li><li>Баллы командные: в зачёт идёт прогресс всех трёх участников, считается автоматически</li></ul></div>
+      <div class="box"><h3>Видео и презентация — 50 баллов</h3><ul><li>Идея: реальная проблема и понятный пользователь</li><li>Прототип: устройство собрано и работает</li><li>Роль ИИ в устройстве и 3D‑модель</li><li>Подача: ясная структура, в видео все участники</li></ul></div>
+    </div>
+  </section>
+
+  <section class="sec" id="docs" aria-labelledby="docsTitle">
+    <div class="sec-head"><h2 id="docsTitle">Документы</h2></div>
+    <p class="sec-sub">Всё, что нужно команде и наставнику.</p>
+    <div class="docs" id="docList"></div>
+  </section>
+
+  <section class="sec" aria-labelledby="rulesTitle">
+    <div class="sec-head"><h2 id="rulesTitle">Коротко о правилах</h2></div>
+    <div class="two">
+      <div class="box"><h3 style="color:var(--purple)">Можно</h3><ul><li>Собирать проект на любой электронике и наборах</li><li>Пользоваться документацией платформы в финале</li><li>Делать несколько попыток в секретном задании</li></ul></div>
+      <div class="box"><h3 style="color:var(--primary)">Нельзя в финале</h3><ul><li>ИИ‑ассистенты для написания кода</li><li>Телефоны и сторонние сайты</li><li>Помощь наставника и общение с другими командами</li></ul></div>
+    </div>
+  </section>
+
+  <section class="sec" id="faq" aria-labelledby="faqTitle">
+    <div class="sec-head"><h2 id="faqTitle">Частые вопросы</h2></div>
+    <div class="faq">
+      <details><summary>У нас нет набора PiBody. Можно участвовать?</summary><p>Да. На отборе проект можно собрать на любой электронике: Arduino, micro:bit, Raspberry Pi, LEGO или другом наборе. Набор PiBody Lite мы отправим командам, которые пройдут в финал.</p></details>
+      <details><summary>Куда отправлять видео?</summary><p>Загрузите видео куда удобно — YouTube, Google Drive, Instagram или другой сервис — и пришлите ссылку на info@artisan.education вместе с презентацией, до 23:59 20 ноября. Ссылка должна открываться без запроса доступа, а видео нельзя удалять до 25 ноября включительно — иначе команда выбывает из отбора.</p></details>
+      <details><summary>Почему регистрация в двух местах?</summary><p>Заявка на <a href="https://yrys.group" target="_blank" rel="noopener">yrys.group</a> — общая регистрация олимпиады «Робо Зерде». На <a href="https://learn.artisan.education" target="_blank" rel="noopener">learn.artisan.education</a> проходит обучение, по нему начисляется половина баллов отбора. Там наставник создаёт команду кнопкой «Создать команду», а ученики присоединяются по коду класса. Нужно и то, и другое.</p></details>
+      <details><summary>До какого числа можно зарегистрироваться?</summary><p>До 23:59 20 ноября. Регистрация, обучение и приём видео идут параллельно с 1 по 20 ноября. Если вы присоединились позже, это не страшно: обучение можно пройти в ускоренном режиме.</p></details>
+      <details><summary>Сколько человек в команде?</summary><p>Три ученика 7, 8 или 9 класса и наставник. Наставник помогает на этапе обучения и проекта, но в финале не участвует в выполнении заданий.</p></details>
+      <details><summary>Можно ли заменить участника?</summary><p>Да, после регистрации — только по письму на info@artisan.education и с согласия организатора. Если в команде выступает человек, которого не заявили и не согласовали, команда выбывает из категории.</p></details>
+      <details><summary>Как считаются баллы?</summary><p>Отбор и финал оцениваются отдельно, по 100 баллов. На отборе: 50 — обучение на платформе, 50 — видео и презентация проекта. В финале: 50 — проект (стенд и питч), 50 — секретное задание.</p></details>
+      <details><summary>Сколько команд пройдёт в финал?</summary><p>Одна команда от каждого региона — та, что набрала больше всего баллов на онлайн‑отборе.</p></details>
+      <details><summary>Какой проект защищать в финале?</summary><p>Тот же, что вы показали на отборе. Его можно доработать до финала, но заменить на другой проект нельзя. Привезите прототип на стенд и подготовьте питч до 5 минут.</p></details>
+      <details><summary>Что за секретные задания?</summary><p>Условия основного задания — секрет до второго дня финала. Известно одно: задание выполняется на наборах Artisan, собирать ничего не нужно, только программировать — на Python или Blockly. Подготовиться помогают проекты на платформе и набор PiBody Lite, который финалисты получат 26–27 ноября.</p></details>
+      <details><summary>За что команду могут дисквалифицировать?</summary><p>Если она удалила видео или закрыла к нему доступ до 25 ноября включительно, выдала чужой проект, видео или презентацию за свои, нарушила запреты финала или выступает с незаявленным участником без согласия организатора. Полный список и порядок апелляций — в регламенте.</p></details>
+      <details><summary>Можно ли пользоваться ИИ?</summary><p>В проекте — да, это категория AI Hardware Hackathon. В финале нельзя использовать ИИ‑ассистентов для написания кода; ИИ внутри устройства разрешён, если он есть в условии задания.</p></details>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-brand">
+      <img src="assets/logo-white.png" alt="Artisan" width="40" height="40">
+      <div>
+        <div class="eyebrow">Платформа</div>
+        <b>learn.artisan.education</b>
+        <p style="color:var(--muted);margin-top:8px">Вопросы: <a href="mailto:info@artisan.education">info@artisan.education</a> · <a href="tel:+77078027333">8 707 802 73 33</a></p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // Документы: вставьте ссылку в url — карточка сама станет активной. Пустой url = «Скоро».
+  // download: true — файл лежит рядом с сайтом (site/files) и скачивается, а не открывается.
+  var DOCS = [
+    {title:'Положение олимпиады «Робо Зерде»', desc:'Общие правила олимпиады для всех категорий', fmt:'PDF', url:''},
+    {title:'Регламент категории AI Hardware Hackathon', desc:'Этапы, сроки, требования к видео и презентации, оценивание, правила финала', fmt:'PDF', url:'files/robo-zerde-2026-ai-hardware-reglament.pdf', download:true},
+    {title:'Инструкция для наставника: регистрация школы', desc:'Как зарегистрировать школу на learn.artisan.education: данные школы, почта, пароль', fmt:'PDF', url:'files/registraciya-shkoly-ru.pdf', download:true},
+    {title:'Инструкция для наставника: класс и ученики', desc:'Как создать класс, взять код класса и как ученики регистрируются по нему', fmt:'PDF', url:'files/sozdanie-klassov-ru.pdf', download:true},
+    {title:'Шаблон презентации', desc:'10 слайдов 16:9 в стиле Artisan: заполните и сохраните в PDF. Открывается в PowerPoint, Keynote и Google Slides', fmt:'PPTX', url:'files/robo-zerde-2026-ai-hardware-shablon.pptx', download:true},
+  ];
+  var list = document.getElementById('docList');
+  DOCS.forEach(function(d){
+    var el = document.createElement('div'); el.className = 'doc';
+    var top = document.createElement('div'); top.className = 'doc-top';
+    var fmtEl = document.createElement('span'); fmtEl.className = 'fmt'; fmtEl.textContent = d.fmt;
+    top.appendChild(fmtEl);
+    var h = document.createElement('h3'); h.textContent = d.title;
+    var p = document.createElement('p'); p.textContent = d.desc;
+    el.appendChild(top); el.appendChild(h); el.appendChild(p);
+    if (d.url) {
+      var a = document.createElement('a'); a.href = d.url;
+      if (d.download) { a.setAttribute('download', ''); a.textContent = 'Скачать'; }
+      else { a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Открыть'; }
+      el.appendChild(a);
+    } else {
+      var s = document.createElement('span'); s.className = 'soon'; s.textContent = 'Скоро';
+      el.appendChild(s);
+    }
+    list.appendChild(el);
+  });
+
+  var cb = document.getElementById('copyMail');
+  if (cb) cb.addEventListener('click', function(){
+    var txt = document.getElementById('mailAddr').textContent;
+    var done = function(){ cb.textContent = 'Скопировано'; setTimeout(function(){ cb.textContent = 'Копировать'; }, 1800); };
+    var fallback = function(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('mailAddr')); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); cb.textContent = 'Выделено — нажмите Ctrl+C'; };
+    try { navigator.clipboard.writeText(txt).then(done, fallback); } catch(e) { fallback(); }
+  });
+
+  var TZ = '+05:00';
+  var FINAL = new Date('2026-12-05T09:00:00' + TZ);
+  var ICONS = {
+    done:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    active:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    locked:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+    trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>'
+  };
+  var fmt = new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',timeZone:'Asia/Almaty'});
+  var stages = Array.prototype.slice.call(document.querySelectorAll('.stage'));
+
+  function parse(s, end){ return new Date(s + (end ? ':59' : ':00') + TZ); }
+  function now(){ return new Date(); }
+  function days(ms){ return Math.max(0, Math.ceil(ms / 864e5)); }
+  function plural(n, a, b, c){ var m10=n%10, m100=n%100; if(m10===1&&m100!==11) return a; if(m10>=2&&m10<=4&&(m100<10||m100>=20)) return b; return c; }
+  function dayWord(n){ return n + ' ' + plural(n,'день','дня','дней'); }
+
+  var EVENTS = [
+    // sub — короткое событие внутри другого этапа: тонкая полоса над дорожкой
+    {name:'Онлайн‑отбор', dates:'1–20 ноя · регистрация, обучение, видео и презентация', from:'2026-11-01', to:'2026-11-20', bg:'#977EFB', pos:'in'},
+    {name:'Итоги отбора', dates:'21–25 ноя', from:'2026-11-21', to:'2026-11-25', bg:'#FF6B8D', pos:'down'},
+    {name:'Подготовка к финалу', dates:'26 ноя – 4 дек', from:'2026-11-26', to:'2026-12-04', bg:'#10513F', fg:'#D4F4EC', pos:'in'},
+    {name:'PiBody Lite', dates:'26–27 ноя', from:'2026-11-26', to:'2026-11-27', bg:'#5EACFF', pos:'up', sub:true},
+    {name:'Финал', dates:'5–6 дек', from:'2026-12-05', to:'2026-12-06', bg:'#F4F7FA', pos:'down', end:true}
+  ];
+  var RM_START = Date.UTC(2026, 10, 1), RM_END = Date.UTC(2026, 11, 7);
+  function dayUTC(k){ return Date.UTC(+k.slice(0,4), +k.slice(5,7)-1, +k.slice(8,10)); }
+  function pctOf(ms){ return ((ms - RM_START) / (RM_END - RM_START) * 100); }
+  function todayKey(t){ return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Almaty',year:'numeric',month:'2-digit',day:'2-digit'}).format(t); }
+  function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function buildCal(t){
+    var rm = document.getElementById('roadmap'); rm.innerHTML = '';
+    var tk = todayKey(t), tms = dayUTC(tk);
+    var axis = el('div','rm-axis'); rm.appendChild(axis);
+    [['ноя',Date.UTC(2026,10,1)],['дек',Date.UTC(2026,11,1)]].forEach(function(m){
+      var tick = el('div','rm-tick'); tick.style.left = pctOf(m[1]) + '%';
+      tick.appendChild(el('span', null, m[0])); rm.appendChild(tick);
+    });
+    var track = el('div','rm-track'); rm.appendChild(track);
+    EVENTS.forEach(function(e){
+      var a = dayUTC(e.from), b = dayUTC(e.to) + 864e5;
+      var left = pctOf(a), width = pctOf(b) - left;
+      if (e.sub) {
+        var bar = el('div','rm-sub'); bar.style.left = left + '%'; bar.style.width = width + '%'; bar.style.background = e.bg;
+        if (b <= tms) bar.classList.add('past');
+        rm.appendChild(bar);
+      }
+      var seg = el('div','rm-seg'); seg.style.left = left + '%'; seg.style.width = width + '%'; seg.style.background = e.bg;
+      seg.style.color = e.fg || '#1B1D21';
+      if (b <= tms) seg.classList.add('past');
+      if (a <= tms && tms < b) seg.classList.add('now');
+      if (e.pos === 'in') { seg.appendChild(el('b', null, e.name)); seg.appendChild(el('span', null, e.dates)); }
+      if (!e.sub) track.appendChild(seg);
+      if (e.pos !== 'in') {
+        var lab = el('div','rm-label ' + e.pos + (e.end ? ' end' : ''));
+        lab.style[e.end ? 'right' : 'left'] = (e.end ? (100 - pctOf(b)) : left) + '%';
+        lab.appendChild(el('b', null, e.name)); lab.appendChild(el('span', null, e.dates));
+        lab.style.setProperty('--c', e.bg);
+        rm.appendChild(lab);
+      }
+    });
+    if (tms >= RM_START && tms < RM_END) {
+      var today = el('div','rm-today'); today.style.left = pctOf(tms + 432e5) + '%';
+      today.appendChild(el('span', null, 'сегодня'));
+      rm.appendChild(today);
+    }
+  }
+
+  function render(animate){
+    var t = now();
+    buildCal(t);
+    var current = null;
+    stages.forEach(function(li, i){
+      var s = parse(li.dataset.start), e = parse(li.dataset.end, true);
+      var state = t > e ? 'done' : (t >= s ? 'active' : 'locked');
+      li.classList.remove('is-done','is-active','is-locked');
+      var node = li.querySelector('.node');
+      var st = li.querySelector('.st-txt');
+      var hint = li.querySelector('.hint');
+      var apply = function(){
+        li.classList.add('is-' + state);
+        node.innerHTML = state === 'done' ? ICONS.done : state === 'active' ? (li.classList.contains('is-final') ? ICONS.trophy : ICONS.active) : ICONS.locked;
+      };
+      if (state === 'active') current = li; // этапы могут идти параллельно — показываем самый поздний
+      st.textContent = state === 'done' ? 'Пройден' : state === 'active' ? 'Идёт сейчас' : 'Откроется ' + fmt.format(s);
+      if (state === 'locked') {
+        hint.textContent = 'Через ' + dayWord(days(s - t));
+      } else if (state === 'active') {
+        var total = e - s, gone = t - s, pct = Math.min(100, Math.max(2, gone / total * 100));
+        hint.textContent = '';
+        li.querySelector('.meter-bar span').style.width = pct.toFixed(1) + '%';
+        li.querySelector('.m-left').textContent = 'Осталось: ' + dayWord(days(e - t));
+        li.querySelector('.m-end').textContent = 'до ' + fmt.format(e);
+      } else {
+        hint.textContent = '';
+      }
+      if (animate) {
+        setTimeout(function(){ apply(); if (state !== 'locked') { li.classList.add('lighting'); setTimeout(function(){ li.classList.remove('lighting'); }, 350); } }, 120 + i * 140);
+      } else { apply(); }
+    });
+
+    var first = parse(stages[0].dataset.start), last = parse(stages[stages.length-1].dataset.end, true);
+    var pct = Math.min(100, Math.max(0, (t - first) / (last - first) * 100));
+    document.getElementById('stripFill').style.width = pct.toFixed(1) + '%';
+
+    var nl = document.getElementById('nowLine');
+    if (current) {
+      nl.innerHTML = 'Сейчас: <strong></strong>';
+      nl.querySelector('strong').textContent = current.querySelector('h3').textContent;
+    } else if (t > last) {
+      nl.textContent = 'Олимпиада завершена. Спасибо всем участникам!';
+    } else {
+      var next = stages.filter(function(li){ return parse(li.dataset.start) > t; })[0];
+      nl.innerHTML = 'Следующий этап: <strong></strong>';
+      nl.querySelector('strong').textContent = next ? next.querySelector('h3').textContent + ' — ' + fmt.format(parse(next.dataset.start)) : '—';
+    }
+  }
+
+  function tick(){
+    var diff = FINAL - now();
+    var d = 0, h = 0, m = 0, s = 0;
+    if (diff > 0) { d = Math.floor(diff/864e5); h = Math.floor(diff%864e5/36e5); m = Math.floor(diff%36e5/6e4); s = Math.floor(diff%6e4/1e3); }
+    document.getElementById('cd-d').textContent = d;
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+
+  render(true); tick();
+  setInterval(tick, 1000);
+  setInterval(function(){ render(false); }, 60000);
+})();
+</script>
+</body>
+</html>
