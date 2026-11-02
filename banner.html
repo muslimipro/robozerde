@@ -5,59 +5,120 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Баннер AI Hardware Hackathon</title>
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=JetBrains+Mono:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700&display=swap">
 <style>html,body{margin:0;background:transparent}</style>
 </head>
 <body>
 
 <!--
-  Баннер-анонс AI Hardware Hackathon для основного сайта Artisan: полоса на всю ширину.
+  Промо-баннер AI Hardware Hackathon для основного сайта Artisan: полоса на всю ширину.
   Вставка: скопировать всё от «BANNER START» до «BANNER END» (стили изолированы префиксом rzb-).
-  Или iframe: <iframe src="https://robozerde.artisan.education/banner.html" title="AI Hardware Hackathon" style="display:block;width:100%;height:64px;border:0" loading="lazy"></iframe>
-  (на узких экранах полоса в две строки — высота iframe ~92px).
-  Тексты и даты — по CLAUDE.md; при изменении правил править и здесь.
+  Или iframe: <iframe src="https://robozerde.artisan.education/banner.html" title="AI Hardware Hackathon" style="display:block;width:100%;height:88px;border:0" loading="lazy"></iframe>
+  (на телефоне высота 76px).
+  Счётчик сам переключается: до конца 20 ноября — дни до конца отбора, потом — дни до финала, после — «Итоги финала».
+  Тексты и даты — по CLAUDE.md; при изменении правил править и здесь (RZB_STAGES в скрипте).
 -->
 
 <!-- BANNER START -->
 <style>
 .rzb{container-type:inline-size;width:100%;font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 .rzb *{box-sizing:border-box}
-.rzb-bar{position:relative;display:flex;align-items:center;justify-content:center;gap:10px 18px;min-height:64px;padding:10px 20px;
-  overflow:hidden;text-decoration:none;color:#F4F7FA;background:#1B1D21;border-bottom:2px solid #28CA9E}
-.rzb-bar::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(151,126,251,.18),transparent 35%,transparent 65%,rgba(40,202,158,.18));pointer-events:none}
+.rzb-bar{position:relative;isolation:isolate;display:flex;align-items:center;gap:28px;min-height:88px;padding:14px max(24px,calc((100% - 1200px)/2));
+  overflow:hidden;text-decoration:none;color:#F4F7FA;background:#151719}
+.rzb-bar::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    radial-gradient(420px 160px at 8% 50%,rgba(151,126,251,.45),transparent 70%),
+    radial-gradient(520px 180px at 92% 50%,rgba(40,202,158,.35),transparent 70%),
+    radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.2px) 0 0/18px 18px}
+.rzb-bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#977EFB,#28CA9E 50%,#FFAB00)}
 .rzb-bar:focus-visible{outline:3px solid #FFAB00;outline-offset:-3px}
-.rzb-tag{position:relative;flex:none;display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:999px;background:#322564;color:#DCD3FF;
-  font:700 11px/1 'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}
-.rzb-tag i{width:7px;height:7px;border-radius:50%;background:#28CA9E;box-shadow:0 0 0 3px rgba(40,202,158,.25)}
-.rzb-text{position:relative;min-width:0;font-size:15px;line-height:1.35;color:#DEE4EB}
-.rzb-text b{font-weight:900;color:#F4F7FA;letter-spacing:-.01em}
-.rzb-text .rzb-short{display:none}
-.rzb-text .o{color:#977EFB}.rzb-text .a{color:#28CA9E}
-.rzb-cta{position:relative;flex:none;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;
-  background:#28CA9E;color:#1B1D21;font-weight:800;font-size:14px;white-space:nowrap;transition:filter .2s}
-.rzb-bar:hover .rzb-cta{filter:brightness(1.1)}
+
+.rzb-logo{flex:none;width:52px;height:52px;border-radius:14px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 8px 28px rgba(40,202,158,.35);animation:rzb-float 4s ease-in-out infinite}
+.rzb-head{flex:none;display:flex;flex-direction:column;gap:6px}
+.rzb-eyebrow{font:700 11px/1 'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#C7B9FF}
+.rzb-title{font-weight:900;font-size:30px;line-height:.95;letter-spacing:-.03em;white-space:nowrap}
+.rzb-title .o{color:#977EFB}
+.rzb-title .a{background:linear-gradient(90deg,#28CA9E,#7AF0CF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rzb-mtimer{display:none;font-size:12.5px;font-weight:700;color:#7AF0CF}
+
+.rzb-pitch{flex:1;min-width:0;font-size:15px;line-height:1.35;font-weight:500;color:#DEE4EB}
+.rzb-pitch b{color:#fff;font-weight:800}
+
+.rzb-timer{flex:none;display:flex;align-items:center;gap:12px;padding:8px 16px 8px 14px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.rzb-dot{flex:none;width:10px;height:10px;border-radius:50%;background:#28CA9E;animation:rzb-pulse 1.8s ease-out infinite}
+.rzb-timer b{display:block;font-weight:900;font-size:24px;line-height:1;letter-spacing:-.02em;color:#fff;font-variant-numeric:tabular-nums}
+.rzb-timer small{display:block;margin-top:3px;font-size:12px;line-height:1.2;color:#A8B5C2}
+
+.rzb-cta{position:relative;flex:none;overflow:hidden;display:inline-flex;align-items:center;gap:8px;padding:14px 24px;border-radius:999px;
+  background:#28CA9E;color:#151719;font-weight:900;font-size:16px;white-space:nowrap;box-shadow:0 6px 24px rgba(40,202,158,.45);transition:transform .2s,box-shadow .2s}
+.rzb-cta::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:rzb-shine 3.2s ease-in-out infinite}
+.rzb-bar:hover .rzb-cta{transform:scale(1.05);box-shadow:0 8px 32px rgba(40,202,158,.6)}
 .rzb-cta svg{transition:transform .2s}
-.rzb-bar:hover .rzb-cta svg{transform:translateX(3px)}
-@container (max-width:760px){
-  .rzb-bar{justify-content:space-between;padding:10px 16px}
-  .rzb-tag{display:none}
-  .rzb-text{font-size:13.5px}
-  .rzb-text .rzb-long{display:none}
-  .rzb-text .rzb-short{display:inline}
-  .rzb-cta{width:40px;height:40px;padding:0;justify-content:center}
-  .rzb-cta span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rzb-bar:hover .rzb-cta svg{transform:translateX(4px)}
+
+@keyframes rzb-pulse{0%{box-shadow:0 0 0 0 rgba(40,202,158,.7)}70%,100%{box-shadow:0 0 0 10px rgba(40,202,158,0)}}
+@keyframes rzb-shine{0%,55%{left:-60%}100%{left:130%}}
+@keyframes rzb-float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(6deg)}}
+
+@container (max-width:1180px){ .rzb-pitch{display:none} .rzb-head{flex:1} }
+@container (max-width:960px){ .rzb-bar{gap:20px} .rzb-title{font-size:24px} .rzb-cta{padding:12px 20px} }
+@container (max-width:680px){
+  .rzb-bar{gap:12px;min-height:76px;padding:12px 16px}
+  .rzb-logo{width:38px;height:38px;border-radius:10px}
+  .rzb-title{font-size:clamp(14px,4.3cqi,20px)}
+  .rzb-head{min-width:0}
+  .rzb-eyebrow{display:none}
+  .rzb-timer{display:none}
+  .rzb-mtimer{display:block}
+  .rzb-cta{width:44px;height:44px;padding:0;justify-content:center}
+  .rzb-cta-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 }
-@media (prefers-reduced-motion:reduce){.rzb-cta,.rzb-cta svg{transition:none}}
+@container (max-width:340px){ .rzb-logo{display:none} }
+@media (prefers-reduced-motion:reduce){.rzb *,.rzb *::after{animation:none!important;transition:none!important}}
 </style>
 <div class="rzb">
   <a class="rzb-bar" href="https://robozerde.artisan.education" target="_top">
-    <span class="rzb-tag"><i></i>Робо Зерде 2026</span>
-    <span class="rzb-text"><b><span class="o">AI</span> <span class="a">Hard</span>ware Hackathon</b><span class="rzb-long"> — олимпиада для команд 7–9 классов. Онлайн‑отбор до 20 ноября, финал 5–6 декабря</span><span class="rzb-short"><br>Отбор до 20 ноября · финал 5–6 дек.</span></span>
-    <span class="rzb-cta"><span>Подробнее</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <img class="rzb-logo" src="https://robozerde.artisan.education/assets/icon-512.png" alt="" width="52" height="52">
+    <span class="rzb-head">
+      <span class="rzb-eyebrow">Робо Зерде 2026 · олимпиада</span>
+      <span class="rzb-title"><span class="o">AI</span> <span class="a">HARD</span>WARE HACKATHON</span>
+      <span class="rzb-mtimer" data-rzb-short>Отбор до 20 ноября · финал 5–6 дек.</span>
+    </span>
+    <span class="rzb-pitch">Собери <b>AI‑устройство</b> командой<br>7–9 классов и <b>выйди в финал</b></span>
+    <span class="rzb-timer">
+      <i class="rzb-dot"></i>
+      <span><b data-rzb-num>1–20 ноября</b><small data-rzb-label>онлайн‑отбор</small></span>
+    </span>
+    <span class="rzb-cta"><span class="rzb-cta-t">Участвовать</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </span>
   </a>
 </div>
+<script>
+(function(){
+  // Даты — Asia/Almaty (UTC+5), как на лендинге
+  var RZB_STAGES = [
+    { until: '2026-11-20T23:59:59+05:00', label: 'до конца отбора', short: 'до конца отбора' },
+    { until: '2026-12-05T09:00:00+05:00', label: 'до финала',       short: 'до финала 5–6 дек.' }
+  ];
+  function plural(n){ var a = n % 10, b = n % 100;
+    return a === 1 && b !== 11 ? 'день' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 'дня' : 'дней'; }
+  var root = document.currentScript && document.currentScript.previousElementSibling;
+  if (!root || !root.classList.contains('rzb')) return;
+  var num = root.querySelector('[data-rzb-num]'), label = root.querySelector('[data-rzb-label]'), short = root.querySelector('[data-rzb-short]');
+  var now = Date.now(), stage = null;
+  for (var i = 0; i < RZB_STAGES.length; i++) if (now < Date.parse(RZB_STAGES[i].until)) { stage = RZB_STAGES[i]; break; }
+  if (!stage) {
+    num.textContent = 'Итоги'; label.textContent = 'финала 5–6 декабря'; short.textContent = 'Итоги финала 5–6 декабря';
+    root.querySelector('.rzb-dot').style.animation = 'none';
+    return;
+  }
+  var days = Math.max(1, Math.ceil((Date.parse(stage.until) - now) / 864e5));
+  num.textContent = days + ' ' + plural(days);
+  label.textContent = stage.label;
+  short.textContent = days + ' ' + plural(days) + ' ' + stage.short;
+})();
+</script>
 <!-- BANNER END -->
 
 </body>
