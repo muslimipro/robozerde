@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-rzb-page>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,8 +13,12 @@
 <!--
   Промо-баннер AI Hardware Hackathon для основного сайта Artisan: полоса на всю ширину.
   Вставка: скопировать всё от «BANNER START» до «BANNER END» (стили изолированы префиксом rzb-).
-  Или iframe: <iframe src="https://robozerde.artisan.education/banner.html" title="AI Hardware Hackathon" style="display:block;width:100%;height:88px;border:0" loading="lazy"></iframe>
+  Или iframe: <iframe src="https://robozerde.artisan.education/banner.html?lang=ru" title="AI Hardware Hackathon" style="display:block;width:100%;height:88px;border:0" loading="lazy"></iframe>
   (на телефоне высота 76px).
+  Язык — русский (ru) или казахский (kk, также принимается kz). Как выбирается:
+  iframe — параметр ?lang=kk в src; код — атрибут data-lang="kk" у <div class="rzb" data-lang="">,
+  без него берётся <html lang> страницы, куда вставлен баннер. Иначе — язык браузера, по умолчанию русский.
+  Ссылка ведёт на лендинг на том же языке.
   Счётчик сам переключается: до конца 20 ноября — дни до конца отбора, потом — дни до финала, после — «Итоги финала».
   Тексты и даты — по CLAUDE.md; при изменении правил править и здесь (RZB_STAGES в скрипте).
 -->
@@ -98,25 +102,52 @@
 (function(){
   // Даты — Asia/Almaty (UTC+5), как на лендинге
   var RZB_STAGES = [
-    { until: '2026-11-20T23:59:59+05:00', label: 'до конца отбора', short: 'до конца отбора' },
-    { until: '2026-12-05T09:00:00+05:00', label: 'до финала',       short: 'до финала 5–6 дек.' }
+    { until: '2026-11-20T23:59:59+05:00',
+      ru: { label: 'до конца отбора', short: function(d){ return d + ' до конца отбора'; } },
+      kk: { label: 'іріктеудің соңына дейін', short: function(d){ return 'Іріктеудің соңына дейін ' + d; } } },
+    { until: '2026-12-05T09:00:00+05:00',
+      ru: { label: 'до финала', short: function(d){ return d + ' до финала 5–6 дек.'; } },
+      kk: { label: 'финалға дейін', short: function(d){ return '5–6 жел. финалға дейін ' + d; } } }
   ];
-  function plural(n){ var a = n % 10, b = n % 100;
-    return a === 1 && b !== 11 ? 'день' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 'дня' : 'дней'; }
+  var TEXT = {
+    ru: { days: function(n){ var a = n % 10, b = n % 100;
+            return n + ' ' + (a === 1 && b !== 11 ? 'день' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 'дня' : 'дней'); },
+          done: ['Итоги', 'финала 5–6 декабря', 'Итоги финала 5–6 декабря'] },
+    kk: { days: function(n){ return n + ' күн'; },
+          done: ['Қорытынды', 'финал, 5–6 желтоқсан', 'Финал қорытындысы, 5–6 желтоқсан'],
+          short: 'Іріктеу 20 қарашаға дейін · финал 5–6 жел.',
+          pitch: '7–9 сынып командасымен<br><b>AI‑құрылғы</b> жина да, <b>финалға шық</b>',
+          num: '1–20 қараша', label: 'онлайн‑іріктеу', cta: 'Қатысу' }
+  };
   var root = document.currentScript && document.currentScript.previousElementSibling;
   if (!root || !root.classList.contains('rzb')) return;
+
+  // Язык: data-lang у баннера → ?lang= → <html lang> страницы-хозяина → язык браузера → ru
+  function pick(v){ v = (v || '').toLowerCase(); return /^(kk|kz)/.test(v) ? 'kk' : /^ru/.test(v) ? 'ru' : ''; }
+  var html = document.documentElement;
+  var lang = pick(root.getAttribute('data-lang')) || pick(new URLSearchParams(location.search).get('lang'))
+    || (html.hasAttribute('data-rzb-page') ? '' : pick(html.lang)) || pick(navigator.language) || 'ru';
+  var t = TEXT[lang];
   var num = root.querySelector('[data-rzb-num]'), label = root.querySelector('[data-rzb-label]'), short = root.querySelector('[data-rzb-short]');
+  if (lang === 'kk') {
+    if (html.hasAttribute('data-rzb-page')) html.lang = 'kk';
+    root.querySelector('.rzb-bar').href = 'https://robozerde.artisan.education/?lang=kk';
+    short.textContent = t.short; num.textContent = t.num; label.textContent = t.label;
+    root.querySelector('.rzb-pitch').innerHTML = t.pitch;
+    root.querySelector('.rzb-cta-t').textContent = t.cta;
+  }
+
   var now = Date.now(), stage = null;
   for (var i = 0; i < RZB_STAGES.length; i++) if (now < Date.parse(RZB_STAGES[i].until)) { stage = RZB_STAGES[i]; break; }
   if (!stage) {
-    num.textContent = 'Итоги'; label.textContent = 'финала 5–6 декабря'; short.textContent = 'Итоги финала 5–6 декабря';
+    num.textContent = t.done[0]; label.textContent = t.done[1]; short.textContent = t.done[2];
     root.querySelector('.rzb-dot').style.animation = 'none';
     return;
   }
   var days = Math.max(1, Math.ceil((Date.parse(stage.until) - now) / 864e5));
-  num.textContent = days + ' ' + plural(days);
-  label.textContent = stage.label;
-  short.textContent = days + ' ' + plural(days) + ' ' + stage.short;
+  num.textContent = t.days(days);
+  label.textContent = stage[lang].label;
+  short.textContent = stage[lang].short(t.days(days));
 })();
 </script>
 <!-- BANNER END -->
