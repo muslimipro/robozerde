@@ -37,8 +37,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 
 /* top bar */
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:22px;flex-wrap:wrap}
-.brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:var(--text);text-decoration:none}
-.brand img{width:32px;height:32px}
+.brand{display:inline-flex;align-items:center;text-decoration:none}
+.brand img{display:block;width:auto;height:26px}
 .top .mono{font-size:13px;color:var(--muted)}
 
 /* hero */
@@ -271,8 +271,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 /* footer */
 .foot{border-top:2px solid var(--line);padding-block:32px 48px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
 .foot b{font-family:var(--display);font-size:20px}
-.foot-brand{display:flex;gap:14px;align-items:flex-start}
-.foot-brand img{width:40px;height:40px;margin-top:2px}
+.foot-brand{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+.foot-brand img{display:block;width:auto;height:30px}
 
 @media (max-width:820px){
   .hero{grid-template-columns:1fr;gap:28px}
@@ -296,7 +296,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 <body>
 <div class="wrap">
   <header class="top">
-    <a class="brand" href="https://learn.artisan.education" target="_blank" rel="noopener"><img src="assets/logo-white.png" alt="" width="32" height="32">Artisan Education</a>
+    <a class="brand" href="https://learn.artisan.education" target="_blank" rel="noopener"><img src="assets/logo-white.svg" alt="Artisan" width="98" height="26"></a>
     <div class="top-r">
       <nav class="nav" aria-label="Разделы">
         <a href="#path">Этапы</a><a href="#calendar">Роадмап</a><a href="#final">Финал</a><a href="#video">Видео и презентация</a><a href="#docs">Документы</a><a href="#faq">Вопросы</a>
@@ -657,7 +657,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 
   <footer class="foot">
     <div class="foot-brand">
-      <img src="assets/logo-white.png" alt="Artisan" width="40" height="40">
+      <img src="assets/logo-white.svg" alt="Artisan" width="113" height="30">
       <div>
         <div class="eyebrow">Платформа</div>
         <b><a href="https://learn.artisan.education/signup?code=UJ5Sy8x7XrRh" target="_blank" rel="noopener">learn.artisan.education</a></b>
@@ -908,14 +908,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 
   // Документы: вставьте ссылку в url — карточка сама станет активной. Пустой url = «Скоро».
   // download: true — файл лежит рядом с сайтом (site/files) и скачивается, а не открывается.
-  // kk — название и описание для казахской версии сайта.
+  // kk — название, описание и (если есть) свой файл url для казахской версии сайта.
   var DOCS = [
     {title:'Положение олимпиады «Робо Зерде»', desc:'Общие правила олимпиады для всех категорий', fmt:'PDF', url:'',
       kk:{title:'«Робо Зерде» олимпиадасының ережесі', desc:'Барлық санатқа ортақ олимпиада ережелері'}},
     {title:'Регламент категории AI Hardware Hackathon', desc:'Этапы, сроки, требования к видео и презентации, оценивание, правила финала', fmt:'PDF', url:'files/robo-zerde-2026-ai-hardware-reglament.pdf', download:true,
-      kk:{title:'AI Hardware Hackathon санатының регламенті (орыс тілінде)', desc:'Кезеңдер, мерзімдер, видео мен презентацияға қойылатын талаптар, бағалау, финал ережелері'}},
-    {title:'Регламент категории AI Hardware Hackathon (на казахском)', desc:'Тот же регламент на казахском языке', fmt:'PDF', url:'files/robo-zerde-2026-ai-hardware-reglament-kk.pdf', download:true,
-      kk:{title:'AI Hardware Hackathon санатының регламенті', desc:'Кезеңдер, мерзімдер, видео мен презентацияға қойылатын талаптар, бағалау, финал ережелері'}},
+      kk:{title:'AI Hardware Hackathon санатының регламенті', desc:'Кезеңдер, мерзімдер, видео мен презентацияға қойылатын талаптар, бағалау, финал ережелері', url:'files/robo-zerde-2026-ai-hardware-reglament-kk.pdf'}},
     {title:'Инструкция для наставника: как создать команду', desc:'Регистрация или вход на learn.artisan.education, создание команды и ссылка для учеников', fmt:'PDF', url:'',
       kk:{title:'Тәлімгерге нұсқаулық: команданы қалай құру керек', desc:'learn.artisan.education платформасында тіркелу немесе кіру, команда құру және оқушыларға арналған сілтеме'}},
     {title:'Шаблон презентации', desc:'10 слайдов 16:9 в стиле Artisan: заполните и сохраните в PDF. Открывается в PowerPoint, Keynote и Google Slides', fmt:'PPTX', url:'files/robo-zerde-2026-ai-hardware-shablon.pptx', download:true,
@@ -933,8 +931,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
       var h = document.createElement('h3'); h.textContent = tx.title;
       var p = document.createElement('p'); p.textContent = tx.desc;
       el.appendChild(top); el.appendChild(h); el.appendChild(p);
-      if (d.url) {
-        var a = document.createElement('a'); a.href = d.url;
+      var url = tx.url || d.url;
+      if (url) {
+        var a = document.createElement('a'); a.href = url;
         if (d.download) { a.setAttribute('download', ''); a.textContent = L('Скачать', 'Жүктеу'); }
         else { a.target = '_blank'; a.rel = 'noopener'; a.textContent = L('Открыть', 'Ашу'); }
         el.appendChild(a);
