@@ -19,7 +19,7 @@
   iframe — параметр ?lang=kk в src; код — атрибут data-lang="kk" у <div class="rzb" data-lang="">,
   без него берётся <html lang> страницы, куда вставлен баннер. Иначе — язык браузера, по умолчанию русский.
   Ссылка ведёт на лендинг на том же языке.
-  Счётчик сам переключается: до конца 20 ноября — дни до конца отбора, потом — дни до финала, после — «Итоги финала».
+  Счётчик сам переключается: до конца 26 ноября — дни до конца отбора, потом — дни до финала, после — «Итоги финала».
   Тексты и даты — по CLAUDE.md; при изменении правил править и здесь (RZB_STAGES в скрипте).
 -->
 
@@ -86,12 +86,12 @@
     <span class="rzb-head">
       <span class="rzb-eyebrow">Робо Зерде 2026 · олимпиада</span>
       <span class="rzb-title"><span class="o">AI</span> <span class="a">HARD</span>WARE HACKATHON</span>
-      <span class="rzb-mtimer" data-rzb-short>Отбор до 20 ноября · финал 5–6 дек.</span>
+      <span class="rzb-mtimer" data-rzb-short>Отбор до 26 ноября · финал 5–6 дек.</span>
     </span>
     <span class="rzb-pitch">Собери <b>AI‑устройство</b> командой<br>7–9 классов и <b>выйди в финал</b></span>
     <span class="rzb-timer">
       <i class="rzb-dot"></i>
-      <span><b data-rzb-num>1–20 ноября</b><small data-rzb-label>онлайн‑отбор</small></span>
+      <span><b data-rzb-num>1–26 ноября</b><small data-rzb-label>онлайн‑отбор</small></span>
     </span>
     <span class="rzb-cta"><span class="rzb-cta-t">Участвовать</span>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -102,7 +102,7 @@
 (function(){
   // Даты — Asia/Almaty (UTC+5), как на лендинге
   var RZB_STAGES = [
-    { until: '2026-11-20T23:59:59+05:00',
+    { until: '2026-11-26T23:59:59+05:00',
       ru: { label: 'до конца отбора', short: function(d){ return d + ' до конца отбора'; } },
       kk: { label: 'іріктеудің соңына дейін', short: function(d){ return 'Іріктеудің соңына дейін ' + d; } } },
     { until: '2026-12-05T09:00:00+05:00',
@@ -115,9 +115,9 @@
           done: ['Итоги', 'финала 5–6 декабря', 'Итоги финала 5–6 декабря'] },
     kk: { days: function(n){ return n + ' күн'; },
           done: ['Қорытынды', 'финал, 5–6 желтоқсан', 'Финал қорытындысы, 5–6 желтоқсан'],
-          short: 'Іріктеу 20 қарашаға дейін · финал 5–6 жел.',
+          short: 'Іріктеу 26 қарашаға дейін · финал 5–6 жел.',
           pitch: '7–9 сынып командасымен<br><b>AI‑құрылғы</b> жина да, <b>финалға шық</b>',
-          num: '1–20 қараша', label: 'онлайн‑іріктеу', cta: 'Қатысу' }
+          num: '1–26 қараша', label: 'онлайн‑іріктеу', cta: 'Қатысу' }
   };
   var root = document.currentScript && document.currentScript.previousElementSibling;
   if (!root || !root.classList.contains('rzb')) return;
